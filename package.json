@@ -1,8 +1,13 @@
 {
   "name": "projeto18-valex",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "type":"module",
   "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./src/server.ts",
+    "dev": "nodemon ./src/server.ts"
+  },
   "dependencies": {
     "@types/cors": "^2.8.12",
     "@types/cryptr": "^4.0.1",
