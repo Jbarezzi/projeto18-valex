@@ -1,24 +1,17 @@
 import {faker} from "@faker-js/faker";
 import Cryptr from "cryptr";
 import dayjs from "dayjs";
-import {Card, CardInsertData, findByTypeAndEmployeeId, insert, TransactionTypes} from "./../repositories/cardRepository.js";
-import {Company, findByApiKey} from "./../repositories/companyRepository.js";
-import {Employee, findById} from "./../repositories/employeeRepository.js";
+import {Card, CardInsertData, findByTypeAndEmployeeId, insert, TransactionTypes} from "../../repositories/cardRepository.js";
+import {Company, findByApiKey} from "../../repositories/companyRepository.js";
+import {Employee, findById} from "../../repositories/employeeRepository.js";
+import { notFoundError } from "../../utils/errorFabric.js";
 
 const secretKey: string = process.env.CRYPTR_SECRET || "secret_key";
 const cryptr = new Cryptr(secretKey);
 
-async function createNewCard(employeeId: number, cardType: TransactionTypes, apiKey: string) {
-  await verifyIfCompanyExists(apiKey);
-  await verifyIfUserExists(employeeId);
-  await verifyIfUserHasCard(cardType, employeeId);
-  const cardData: CardInsertData = await formatNewCard(employeeId, cardType);
-  await insert(cardData);
-}
-
 async function verifyIfUserExists(id: number) {
-  const hasUser: Employee = await findById(id);
-  if(!hasUser) throw { type: "error_not_found", message: "Usuário não encontrado." }; 
+  const isUserValid: Employee = await findById(id);
+  if(!isUserValid) throw notFoundError('o usuário'); 
 }
 
 async function verifyIfUserHasCard(type: TransactionTypes, id: number) {
@@ -27,8 +20,8 @@ async function verifyIfUserHasCard(type: TransactionTypes, id: number) {
 }
 
 async function verifyIfCompanyExists(apiKey: string) {
-  const hasCompany: Company = await findByApiKey(apiKey);
-  if(!hasCompany) throw { type: "error_not_found", message: "Empresa não encontrada." };
+  const isCompanyValid: Company = await findByApiKey(apiKey);
+  if(!isCompanyValid) throw notFoundError('a empresa');
 }
 
 async function formatNewCard(employeeId: number, cardType: TransactionTypes) {
@@ -65,4 +58,12 @@ function formatName(name: string) {
   return nameString.toUpperCase();
 }
 
-export { createNewCard };
+async function createCardService(employeeId: number, cardType: TransactionTypes, apiKey: string) {
+  await verifyIfCompanyExists(apiKey);
+  await verifyIfUserExists(employeeId);
+  await verifyIfUserHasCard(cardType, employeeId);
+  const cardData: CardInsertData = await formatNewCard(employeeId, cardType);
+  await insert(cardData);
+}
+
+export default createCardService;
