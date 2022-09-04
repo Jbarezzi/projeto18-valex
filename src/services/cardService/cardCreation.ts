@@ -1,13 +1,10 @@
 import {faker} from "@faker-js/faker";
-import Cryptr from "cryptr";
 import dayjs from "dayjs";
 import {Card, CardInsertData, findByTypeAndEmployeeId, insert, TransactionTypes} from "../../repositories/cardRepository.js";
 import {Company, findByApiKey} from "../../repositories/companyRepository.js";
 import {Employee, findById} from "../../repositories/employeeRepository.js";
-import { notFoundError } from "../../utils/errorFabric.js";
-
-const secretKey: string = process.env.CRYPTR_SECRET || "secret_key";
-const cryptr = new Cryptr(secretKey);
+import cryptr from "../../utils/cryptr.js";
+import { conflictError, notFoundError } from "../../utils/errorFactory.js";
 
 async function verifyIfUserExists(id: number) {
   const isUserValid: Employee = await findById(id);
@@ -16,7 +13,7 @@ async function verifyIfUserExists(id: number) {
 
 async function verifyIfUserHasCard(type: TransactionTypes, id: number) {
   const hasCard: Card = await findByTypeAndEmployeeId(type, id);
-  if(!!hasCard) throw { type: "error_conflict", message: "Usuário já possui um cartão desse tipo." };
+  if(!!hasCard) throw conflictError("Usuário já possui um cartão desse tipo.");
 }
 
 async function verifyIfCompanyExists(apiKey: string) {
@@ -27,6 +24,7 @@ async function verifyIfCompanyExists(apiKey: string) {
 async function formatNewCard(employeeId: number, cardType: TransactionTypes) {
   const number: string = faker.finance.creditCardNumber();
   const securityCode: string = faker.finance.creditCardCVV();
+  console.log(securityCode);
   const { fullName }: { fullName: string } = await findById(employeeId);
   const cardholderName: string = formatName(fullName);
   const expirationDate: string = dayjs().add(5, "year").format("MM/YY");

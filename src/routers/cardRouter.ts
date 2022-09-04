@@ -7,7 +7,7 @@ import {cardActivationSchema, cardCreationSchema} from '../schemas/cardSchemas.j
 
 const cardRouter = Router();
 
-cardRouter.post("/create-card", joiValidator(cardCreationSchema), verifyApiKey, createCard);
-cardRouter.post("/card-activation", joiValidator(cardActivationSchema), activateCard);
+cardRouter.post("/create", joiValidator(cardCreationSchema), verifyApiKey, createCard);
+cardRouter.post("/activate", joiValidator(cardActivationSchema), activateCard);
 
 export default cardRouter;
