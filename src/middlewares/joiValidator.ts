@@ -6,7 +6,7 @@ const joiValidator = (schema: Schema) => {
         const body: {} = req.body;
 
         const { error } = schema.validate(body, { abortEarly: false });
-        if(error) throw { code: "error_data", message: "Dados inválidos"};
+        if(error) throw { type: "error_unprocessable_entity", message: "Dados inválidos"};
 
         next();
     }
