@@ -2,6 +2,7 @@ import type {Request, Response} from 'express';
 import type {TransactionTypes} from '../repositories/cardRepository.js';
 import createCardService from '../services/cardService/cardCreation.js';
 import blockUnblockCardService from '../services/cardService/cardLock.js';
+import rechargeCardService from '../services/cardService/cardRecharge.js';
 import activateCardService from './../services/cardService/cardActivation.js';
 
 async function createCard(req: Request, res: Response) {
@@ -41,4 +42,13 @@ async function unblockCard(req: Request, res: Response) {
   res.sendStatus(204);
 }
 
-export { createCard, activateCard, blockCard, unblockCard };
+async function rechargeCard(req: Request, res: Response) {
+  const cardId: number = Number(req.params.cardId);
+  const amount: number = req.body.amount;
+
+  await rechargeCardService(cardId, amount);
+
+  res.sendStatus(204);
+}
+
+export { createCard, activateCard, blockCard, unblockCard, rechargeCard };

@@ -11,8 +11,12 @@ const cardActivationSchema = Joi.object({
   password: Joi.string().trim().pattern(/^[0-9]+$/).length(4).required(),
 });
 
-const cardPassword = Joi.object({
+const cardPasswordSchema = Joi.object({
   password: Joi.string().trim().pattern(/^[0-9]+$/).length(4).required(),
 });
 
-export { cardCreationSchema, cardActivationSchema, cardPassword };
+const rechargeSchema = Joi.object({
+  amount: Joi.number().positive().required(),
+});
+
+export { cardCreationSchema, cardActivationSchema, cardPasswordSchema, rechargeSchema };

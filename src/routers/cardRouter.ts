@@ -1,16 +1,16 @@
 import {Router} from 'express';
-import {activateCard, blockCard, createCard, unblockCard} from '../controllers/cardController.js';
+import {activateCard, blockCard, createCard, rechargeCard, unblockCard} from '../controllers/cardController.js';
 import joiValidator from '../middlewares/joiValidator.js';
 import verifyApiKey from '../middlewares/verifyApiKey.js';
-import {cardActivationSchema, cardPassword, cardCreationSchema} from '../schemas/cardSchemas.js';
+import {cardActivationSchema, cardPasswordSchema, cardCreationSchema, rechargeSchema} from '../schemas/cardSchemas.js';
 
 
 const cardRouter = Router();
 
-cardRouter.post("/create", joiValidator(cardCreationSchema), verifyApiKey, createCard);
-cardRouter.patch("/activate", joiValidator(cardActivationSchema), activateCard);
-cardRouter.patch("/block/:cardId", joiValidator(cardPassword), blockCard);
-cardRouter.patch("/unblock/:cardId", joiValidator(cardPassword), unblockCard);
-cardRouter.patch("/recharge/:")
+cardRouter.post("/card/create", joiValidator(cardCreationSchema), verifyApiKey, createCard);
+cardRouter.patch("/card/activate", joiValidator(cardActivationSchema), activateCard);
+cardRouter.patch("/card/block/:cardId", joiValidator(cardPasswordSchema), blockCard);
+cardRouter.patch("/card/unblock/:cardId", joiValidator(cardPasswordSchema), unblockCard);
+cardRouter.patch("/card/recharge/:cardId", joiValidator(rechargeSchema), rechargeCard);
 
 export default cardRouter;
