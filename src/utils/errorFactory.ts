@@ -12,4 +12,11 @@ function conflictError(message: string) {
   }
 }
 
-export {notFoundError, conflictError};
+function unauthorizedError(entity: string) {
+  return {
+    type: "error_unauthorized",
+    message: `${entity} está incorreto.`,
+  }
+}
+
+export {notFoundError, conflictError, unauthorizedError};
