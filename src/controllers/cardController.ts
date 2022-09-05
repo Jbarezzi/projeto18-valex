@@ -1,5 +1,6 @@
 import type {Request, Response} from 'express';
 import type {TransactionTypes} from '../repositories/cardRepository.js';
+import getBalanceService from '../services/cardService/cardBalance.js';
 import createCardService from '../services/cardService/cardCreation.js';
 import blockUnblockCardService from '../services/cardService/cardLock.js';
 import rechargeCardService from '../services/cardService/cardRecharge.js';
@@ -51,4 +52,12 @@ async function rechargeCard(req: Request, res: Response) {
   res.sendStatus(204);
 }
 
-export { createCard, activateCard, blockCard, unblockCard, rechargeCard };
+async function getBalance(req: Request, res: Response) {
+  const cardId: number = Number(req.params.cardId);
+
+  const balance = await getBalanceService(cardId);
+
+  res.status(200).send(balance);
+}
+
+export { createCard, activateCard, blockCard, unblockCard, rechargeCard, getBalance };
