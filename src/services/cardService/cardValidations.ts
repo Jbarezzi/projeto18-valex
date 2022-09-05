@@ -4,6 +4,9 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import { Card, findById } from "../../repositories/cardRepository.js";
 import { notFoundError, conflictError, unauthorizedError } from "../../utils/errorFactory.js";
+import * as rechargeRepository from "../../repositories/rechargeRepository.js";
+import * as payementRepository from "../../repositories/paymentRepository.js";
+import calculateBalance from "../../utils/calculateBalance.js";
 dayjs.extend(customParseFormat);
 dayjs.extend(isSameOrAfter);
 
@@ -20,9 +23,31 @@ function verifyIfCardIsExpired(expiration: string) {
   if(hasExpired) throw conflictError("O cartão já está expirado.");
 }
 
+function verifyIfCardIsActivated(password: string | undefined) {
+  if(!password) throw conflictError("O cartão não está ativado.");
+}
+
+function verifyIfCardIsBlocked(isBlocked: boolean, type: string) {
+  switch(type) {
+    case "block":
+      if(isBlocked) throw conflictError("O cartão está bloqueado.");
+      break;
+    case "unblock":
+      if(!isBlocked) throw conflictError("O cartão está desbloqueado.");
+      break;
+  };
+}
+
 function verifyPassword(password: string, dbPassword: string) {
   const isPasswordValid = bcrypt.compare(password, dbPassword);
   if(!isPasswordValid) throw unauthorizedError("A senha");
 }
 
-export {verifyIfCardExists, verifyIfCardIsExpired, verifyPassword};
+async function getCardBalance(cardId: number) {
+  const recharges: rechargeRepository.Recharge[] = await rechargeRepository.findByCardId(cardId);
+  const payments: payementRepository.Payment[] = await payementRepository.findByCardId(cardId);
+  const balance = calculateBalance(recharges, payments);
+  return {recharges, payments, balance};
+}
+
+export {verifyIfCardExists, verifyIfCardIsExpired, verifyPassword, verifyIfCardIsActivated, verifyIfCardIsBlocked, getCardBalance};

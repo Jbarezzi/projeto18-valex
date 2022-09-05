@@ -24,7 +24,6 @@ async function verifyIfCompanyExists(apiKey: string) {
 async function formatNewCard(employeeId: number, cardType: TransactionTypes) {
   const number: string = faker.finance.creditCardNumber();
   const securityCode: string = faker.finance.creditCardCVV();
-  console.log(securityCode);
   const { fullName }: { fullName: string } = await findById(employeeId);
   const cardholderName: string = formatName(fullName);
   const expirationDate: string = dayjs().add(5, "year").format("MM/YY");

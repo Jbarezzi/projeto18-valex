@@ -1,15 +1,5 @@
 import { update } from "../../repositories/cardRepository.js";
-import { conflictError } from "../../utils/errorFactory.js";
-import { verifyIfCardExists, verifyIfCardIsExpired, verifyPassword } from "./cardValidations.js";
-
-function verifyIfCardIsBlocked(isBlocked: boolean, type: string) {
-  switch(type) {
-    case "block":
-      if(isBlocked) throw conflictError("O cartão já está bloqueado.");
-    case "unblock":
-      if(!isBlocked) throw conflictError("O cartão já está desbloqueado.");
-  };
-}
+import { verifyIfCardExists, verifyIfCardIsBlocked, verifyIfCardIsExpired, verifyPassword } from "./cardValidations.js";
 
 async function blockUnblockCardService(cardId: number, password: string, type: string) {
   const card = await verifyIfCardExists(cardId);
